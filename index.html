@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dayton Operations Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand-block">
+        <div class="brand-mark">D</div>
+        <div>
+          <strong>Dayton Ops</strong>
+          <span>Facility dashboard</span>
+        </div>
+      </div>
+      <nav class="side-nav" id="sideNav"></nav>
+      <div class="sidebar-footer">
+        <span class="status-dot status-partial"></span>
+        <div>
+          <strong id="sidebarCoverage">87% covered</strong>
+          <span>Weekend readiness</span>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menuButton" type="button" aria-label="Open navigation">Menu</button>
+        <div class="topbar-title">
+          <strong id="pageTitle">Dashboard</strong>
+          <span id="pageSubtitle">Weekend operational visibility</span>
+        </div>
+        <div class="topbar-actions">
+          <label class="role-switcher" for="roleSelect">
+            <span>Access</span>
+            <select id="roleSelect">
+              <option value="dayton">Dayton Admin</option>
+              <option value="blades">Eastern Blades Admin</option>
+              <option value="harlies">Harlies Admin</option>
+            </select>
+          </label>
+          <button class="text-button" id="sampleImportButton" type="button">Import sample</button>
+          <button class="primary-button" data-route="upload" type="button">Upload fixtures</button>
+        </div>
+      </header>
+
+      <section class="view is-active" id="view-dashboard" aria-labelledby="dashboardHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="dashboardHeading">Dayton Home Dashboard</h1>
+            <p>Current weekend readiness based on the latest fixture import and staffing allocations.</p>
+          </div>
+          <div class="date-pill" id="activeImportLabel">Round 12 imported today</div>
+        </div>
+
+        <section class="hero-panel">
+          <div>
+            <span class="eyebrow">Weekend readiness</span>
+            <h2 id="heroTitle">Operations are partially covered</h2>
+            <p id="heroCopy">Casual staff are allocated first. Remaining open positions are visible for member clubs to organise independently.</p>
+          </div>
+          <div class="hero-score">
+            <strong id="heroCoverage">0%</strong>
+            <span>coverage</span>
+          </div>
+        </section>
+
+        <div class="summary-grid metric-strip" id="summaryGrid"></div>
+
+        <section class="access-panel" id="accessPanel">
+          <div>
+            <span class="eyebrow dark">Current access level</span>
+            <h2 id="accessTitle">Dayton Admin</h2>
+            <p id="accessCopy">Full operational visibility, fixture upload, casual allocation, allocation override, alerts, and reports.</p>
+          </div>
+          <div class="permission-chips" id="permissionChips"></div>
+        </section>
+
+        <div class="content-grid two-columns">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Coverage Status</h2>
+              <span id="coverageBadge" class="badge badge-partial">Partial</span>
+            </div>
+            <div class="coverage-meter">
+              <div class="coverage-track"><span id="coverageFill"></span></div>
+              <div class="coverage-copy">
+                <strong id="coveragePercent">0%</strong>
+                <span id="coverageText">Calculating coverage</span>
+              </div>
+            </div>
+            <div class="quick-list" id="riskList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Changes Since Last Upload</h2>
+              <button class="ghost-button" data-route="upload" type="button">Review import</button>
+            </div>
+            <div class="quick-list" id="changeList"></div>
+          </section>
+        </div>
+
+        <div class="dashboard-board">
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Casual Staff</h2>
+                <p>Assigned first to reduce volunteer load.</p>
+              </div>
+              <button class="ghost-button" data-route="casual" type="button">Manage</button>
+            </div>
+            <div class="dashboard-cards" id="dashboardCasualCards"></div>
+          </section>
+
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Volunteer Requirements</h2>
+                <p>Remaining club-owned positions after casual allocation.</p>
+              </div>
+              <button class="ghost-button" data-route="weekend" type="button">View ops</button>
+            </div>
+            <div class="dashboard-cards" id="dashboardVolunteerCards"></div>
+          </section>
+
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Team Availability</h2>
+                <p>Club status signals for volunteer opportunity planning.</p>
+              </div>
+              <button class="ghost-button" data-route="teams" type="button">Open teams</button>
+            </div>
+            <div class="dashboard-cards" id="dashboardTeamCards"></div>
+          </section>
+
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Fixture Changes</h2>
+                <p>Operational differences from the previous upload.</p>
+              </div>
+              <button class="ghost-button" data-route="upload" type="button">Review</button>
+            </div>
+            <div class="dashboard-cards" id="dashboardChangeCards"></div>
+          </section>
+        </div>
+
+        <div class="content-grid two-columns">
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Manual Overrides</h2>
+                <p>Dayton can override an automatically calculated volunteer club allocation with an audited reason.</p>
+              </div>
+              <span id="overrideAccessBadge" class="badge badge-neutral">Dayton only</span>
+            </div>
+            <div id="overrideFormWrap" class="override-form"></div>
+          </section>
+
+          <section class="panel dashboard-section">
+            <div class="panel-heading">
+              <div>
+                <h2>Override Alerts</h2>
+                <p>Alerts appear here and can be exported for affected club administrators.</p>
+              </div>
+              <button class="ghost-button" id="exportAlertsButton" type="button">Email export</button>
+            </div>
+            <div class="dashboard-cards" id="overrideAlertCards"></div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>Primary Club Allocation</h2>
+            <button class="ghost-button" data-route="rules" type="button">Configure rules</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Session</th>
+                  <th>Primary Club</th>
+                  <th>Games</th>
+                  <th>Volunteer Gap</th>
+                  <th>Coverage</th>
+                </tr>
+              </thead>
+              <tbody id="allocationTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-upload" aria-labelledby="uploadHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="uploadHeading">Fixture Upload</h1>
+            <p>Import the weekly fixture spreadsheet, validate required columns, and review operational changes.</p>
+          </div>
+          <div class="date-pill">Monday / Tuesday workflow</div>
+        </div>
+
+        <div class="content-grid two-columns">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Upload Fixture File</h2>
+              <span class="badge badge-neutral">Version 1</span>
+            </div>
+            <label class="upload-zone" for="fixtureFile">
+              <input id="fixtureFile" type="file" accept=".xlsx,.csv,.txt">
+              <strong>Select spreadsheet</strong>
+              <span>Required columns: Date, Time, Venue, Surface, Grade, Home Team, Away Team</span>
+            </label>
+            <div class="form-row">
+              <button class="primary-button" id="processFileButton" type="button">Process file</button>
+              <button class="text-button" id="loadFixtureCsvButton" type="button">Load CSV demo</button>
+            </div>
+            <div class="notice" id="uploadNotice">
+              Upload the HWA `.xlsx` fixture spreadsheet or a CSV export. The prototype reads the first worksheet and maps the required fixture columns automatically.
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Import Result</h2>
+              <span id="importStatusBadge" class="badge badge-filled">Ready</span>
+            </div>
+            <div class="import-result" id="importResult"></div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>Detected Changes</h2>
+            <span id="changeCountLabel">3 changes</span>
+          </div>
+          <div class="quick-list" id="uploadChangeList"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-weekend" aria-labelledby="weekendHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="weekendHeading">Weekend Operations</h1>
+            <p>Session-by-session view of games, requirements, casual coverage, and volunteer gaps.</p>
+          </div>
+          <div class="segmented" id="dayFilter"></div>
+        </div>
+        <div class="operations-list" id="operationsList"></div>
+      </section>
+
+      <section class="view" id="view-teams" aria-labelledby="teamsHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="teamsHeading">Team Availability</h1>
+            <p>Club-facing view for identifying volunteer opportunities without Dayton assigning individual volunteers.</p>
+          </div>
+          <div class="filter-control">
+            <label for="clubFilter">Club</label>
+            <select id="clubFilter"></select>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Teams</h2>
+            <div class="segmented compact" id="statusFilter"></div>
+          </div>
+          <div class="team-grid" id="teamGrid"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-casual" aria-labelledby="casualHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="casualHeading">Casual Staff</h1>
+            <p>Casual staffing is allocated first so remaining positions can become club volunteer requirements.</p>
+          </div>
+          <button class="primary-button" id="autoAssignButton" type="button">Auto-fill open casual shifts</button>
+        </div>
+        <div class="content-grid two-columns">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Assigned Shifts</h2>
+              <span id="casualHoursLabel">0 hours</span>
+            </div>
+            <div class="quick-list" id="casualShiftList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Open Casual Shifts</h2>
+              <span id="openCasualLabel">0 open</span>
+            </div>
+            <div class="quick-list" id="openCasualList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-reports" aria-labelledby="reportsHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="reportsHeading">Reports</h1>
+            <p>Operational reporting for coverage, volunteer hours, casual hours, committee hours, and open positions.</p>
+          </div>
+          <div class="date-pill">This weekend</div>
+        </div>
+        <div class="summary-grid" id="reportSummaryGrid"></div>
+        <div class="content-grid two-columns">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Volunteer Hours By Club</h2>
+            </div>
+            <div class="bar-list" id="clubHoursChart"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Coverage Exceptions</h2>
+            </div>
+            <div class="quick-list" id="coverageExceptions"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-rules" aria-labelledby="rulesHeading">
+        <div class="section-heading">
+          <div>
+            <h1 id="rulesHeading">Rules & Setup</h1>
+            <p>Data-driven settings for primary club allocation, operational roles, sessions, and shift templates.</p>
+          </div>
+          <button class="primary-button" id="saveRulesButton" type="button">Save rules</button>
+        </div>
+        <div class="content-grid two-columns">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Primary Club Weights</h2>
+              <span id="weightTotalBadge" class="badge badge-filled">100%</span>
+            </div>
+            <div class="rule-form" id="ruleForm"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Operational Role Templates</h2>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Default Owner</th>
+                    <th>Shift</th>
+                    <th>Active</th>
+                  </tr>
+                </thead>
+                <tbody id="roleTemplateTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="mobile-backdrop" id="mobileBackdrop"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="jszip.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

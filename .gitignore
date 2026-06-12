@@ -1,0 +1,21 @@
+# Local/generated artifacts
+prd_render/
+techspec_render/
+playwright-artifacts-*/
+playwright_chromiumdev_profile-*/
+
+# Local helper scripts used to generate documents
+build_prd.py
+build_technical_spec.py
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+*.tmp
+~$*
